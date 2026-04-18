@@ -3,7 +3,11 @@
     "allow": [
       "Bash(npm install *)",
       "Bash(npm run *)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "mcp__46c0bfee-6686-4de1-a55f-ef99fdc79bde__list_teams",
+      "mcp__46c0bfee-6686-4de1-a55f-ef99fdc79bde__list_projects",
+      "mcp__46c0bfee-6686-4de1-a55f-ef99fdc79bde__list_deployments",
+      "mcp__46c0bfee-6686-4de1-a55f-ef99fdc79bde__get_deployment_build_logs"
     ]
   }
 }
