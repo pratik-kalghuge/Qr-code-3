@@ -9,7 +9,9 @@
       "mcp__46c0bfee-6686-4de1-a55f-ef99fdc79bde__list_deployments",
       "mcp__46c0bfee-6686-4de1-a55f-ef99fdc79bde__get_deployment_build_logs",
       "mcp__46c0bfee-6686-4de1-a55f-ef99fdc79bde__get_project",
-      "mcp__46c0bfee-6686-4de1-a55f-ef99fdc79bde__get_runtime_logs"
+      "mcp__46c0bfee-6686-4de1-a55f-ef99fdc79bde__get_runtime_logs",
+      "Bash(rm -rf \"F:/Qr-code/proj/frontend/api\")",
+      "Bash(rm -rf \"F:/Qr-code/proj/api\")"
     ]
   }
 }

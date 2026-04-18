@@ -5,6 +5,26 @@ import QRCodeDisplay from '../components/QRCodeDisplay';
 
 type Stage = 'select' | 'uploading' | 'ready' | 'error';
 
+const CLOUD_NAME = 'da3d7a1xg';
+const UPLOAD_PRESET = 'pk_preset_name';
+
+async function uploadToCloudinary(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', UPLOAD_PRESET);
+
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`,
+    { method: 'POST', body: formData }
+  );
+
+  const data = await res.json() as { secure_url?: string; error?: { message: string } };
+  if (!res.ok || !data.secure_url) {
+    throw new Error(data.error?.message || 'Upload failed');
+  }
+  return data.secure_url;
+}
+
 export default function SenderPage() {
   const navigate = useNavigate();
   const [stage, setStage] = useState<Stage>('select');
@@ -17,21 +37,11 @@ export default function SenderPage() {
     setStage('uploading');
 
     try {
-      const res = await fetch(
-        `/api/upload?filename=${encodeURIComponent(f.name)}&contentType=${encodeURIComponent(f.type || 'application/octet-stream')}`,
-        { method: 'POST', body: f }
-      );
-
-      if (!res.ok) {
-        const err = await res.json() as { error: string };
-        throw new Error(err.error || `Upload failed: ${res.status}`);
-      }
-
-      const { url } = await res.json() as { url: string };
+      const fileUrl = await uploadToCloudinary(f);
 
       const receiveUrl =
         `${window.location.origin}/receive` +
-        `?url=${encodeURIComponent(url)}` +
+        `?url=${encodeURIComponent(fileUrl)}` +
         `&name=${encodeURIComponent(f.name)}` +
         `&size=${f.size}`;
 
@@ -53,17 +63,12 @@ export default function SenderPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6">
       <div className="max-w-md w-full">
-        <button
-          onClick={() => navigate('/')}
-          className="mb-6 text-gray-400 hover:text-gray-600 text-sm"
-        >
+        <button onClick={() => navigate('/')} className="mb-6 text-gray-400 hover:text-gray-600 text-sm">
           ← Back
         </button>
         <h1 className="text-2xl font-bold text-gray-900 mb-6">Send File</h1>
 
-        {stage === 'select' && (
-          <FileSelector onFileSelect={handleFileSelect} />
-        )}
+        {stage === 'select' && <FileSelector onFileSelect={handleFileSelect} />}
 
         {stage === 'uploading' && (
           <div className="text-center">
@@ -71,7 +76,7 @@ export default function SenderPage() {
             <p className="text-gray-700 font-medium">Uploading to cloud...</p>
             <p className="text-gray-400 text-sm mt-2">{file?.name}</p>
             <div className="mt-6 w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-              <div className="bg-blue-600 h-2 rounded-full animate-[loading_1.5s_ease-in-out_infinite]" style={{ width: '60%' }} />
+              <div className="bg-blue-600 h-2 rounded-full w-full animate-pulse" />
             </div>
           </div>
         )}
@@ -100,10 +105,7 @@ export default function SenderPage() {
           <div className="text-center">
             <div className="text-4xl mb-4">❌</div>
             <p className="text-red-600 mb-4">{error}</p>
-            <button
-              onClick={reset}
-              className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700"
-            >
+            <button onClick={reset} className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700">
               Try Again
             </button>
           </div>
