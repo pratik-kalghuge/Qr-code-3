@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { upload } from '@vercel/blob/client';
 import FileSelector from '../components/FileSelector';
 import QRCodeDisplay from '../components/QRCodeDisplay';
 
@@ -18,14 +17,21 @@ export default function SenderPage() {
     setStage('uploading');
 
     try {
-      const blob = await upload(f.name, f, {
-        access: 'public',
-        handleUploadUrl: '/api/upload',
-      });
+      const res = await fetch(
+        `/api/upload?filename=${encodeURIComponent(f.name)}&contentType=${encodeURIComponent(f.type || 'application/octet-stream')}`,
+        { method: 'POST', body: f }
+      );
+
+      if (!res.ok) {
+        const err = await res.json() as { error: string };
+        throw new Error(err.error || `Upload failed: ${res.status}`);
+      }
+
+      const { url } = await res.json() as { url: string };
 
       const receiveUrl =
         `${window.location.origin}/receive` +
-        `?url=${encodeURIComponent(blob.url)}` +
+        `?url=${encodeURIComponent(url)}` +
         `&name=${encodeURIComponent(f.name)}` +
         `&size=${f.size}`;
 
@@ -64,8 +70,8 @@ export default function SenderPage() {
             <div className="text-4xl mb-4 animate-pulse">⬆️</div>
             <p className="text-gray-700 font-medium">Uploading to cloud...</p>
             <p className="text-gray-400 text-sm mt-2">{file?.name}</p>
-            <div className="mt-6 w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-blue-600 h-2 rounded-full animate-pulse w-3/4" />
+            <div className="mt-6 w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+              <div className="bg-blue-600 h-2 rounded-full animate-[loading_1.5s_ease-in-out_infinite]" style={{ width: '60%' }} />
             </div>
           </div>
         )}

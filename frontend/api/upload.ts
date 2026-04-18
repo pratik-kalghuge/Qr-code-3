@@ -1,5 +1,9 @@
-import { handleUpload, type HandleUploadBody } from '@vercel/blob/client';
+import { put } from '@vercel/blob';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+
+export const config = {
+  api: { bodyParser: false },
+};
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -7,39 +11,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const body = req.body as HandleUploadBody;
+    const filename = (req.query.filename as string) || 'file';
+    const contentType = (req.query.contentType as string) || 'application/octet-stream';
 
-    const response = await handleUpload({
-      body,
-      request: req,
-      onBeforeGenerateToken: async (_pathname) => {
-        return {
-          maximumSizeInBytes: 100 * 1024 * 1024, // 100MB
-          addRandomSuffix: true,
-          allowedContentTypes: [
-            'image/jpeg',
-            'image/png',
-            'image/gif',
-            'image/webp',
-            'application/pdf',
-            'text/plain',
-            'text/csv',
-            'application/json',
-            'application/msword',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-          ],
-        };
-      },
-      onUploadCompleted: async ({ blob }) => {
-        console.log('Upload completed:', blob.url);
-      },
+    const blob = await put(filename, req, {
+      access: 'public',
+      contentType,
+      addRandomSuffix: true,
     });
 
-    return res.json(response);
+    return res.json({ url: blob.url });
   } catch (error) {
     console.error('Upload error:', error);
-    return res.status(400).json({ error: String(error) });
+    return res.status(500).json({ error: String(error) });
   }
 }
