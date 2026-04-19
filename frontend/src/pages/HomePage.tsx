@@ -1,29 +1,66 @@
 import { useNavigate } from 'react-router-dom';
+import { useDarkMode } from '../hooks/useDarkMode';
+import DarkModeToggle from '../components/DarkModeToggle';
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const { dark, toggle } = useDarkMode();
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-6">
-      <div className="max-w-md w-full text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">P2P File Share</h1>
-        <p className="text-gray-500 mb-10">Transfer files directly between devices. No server storage.</p>
-        <div className="flex flex-col gap-4">
-          <button
-            onClick={() => navigate('/send')}
-            className="w-full py-4 px-6 bg-blue-600 text-white rounded-xl text-lg font-semibold hover:bg-blue-700 transition-colors"
-          >
-            Send a File
-          </button>
-          <button
-            onClick={() => navigate('/receive')}
-            className="w-full py-4 px-6 bg-gray-200 text-gray-800 rounded-xl text-lg font-semibold hover:bg-gray-300 transition-colors"
-          >
-            Receive a File
-          </button>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-slate-900 dark:to-slate-800 transition-colors">
+      {/* Top bar */}
+      <div className="flex justify-end p-4">
+        <DarkModeToggle dark={dark} toggle={toggle} />
+      </div>
+
+      {/* Hero */}
+      <div className="flex flex-col items-center justify-center px-6 py-16">
+        <div className="max-w-lg w-full text-center">
+          <div className="text-6xl mb-4">⚡</div>
+          <h1 className="text-5xl font-extrabold text-slate-900 dark:text-slate-100 mb-3 tracking-tight">
+            QR File Share
+          </h1>
+          <p className="text-lg text-slate-500 dark:text-slate-400 mb-8">
+            Send any file instantly — just scan a QR code. No signup, no waiting.
+          </p>
+
+          {/* Feature badges */}
+          <div className="flex flex-wrap justify-center gap-2 mb-10">
+            {['No signup', 'Instant', 'Any device', 'Free'].map((label) => (
+              <span
+                key={label}
+                className="px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300"
+              >
+                {label}
+              </span>
+            ))}
+          </div>
+
+          {/* Action cards */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <button
+              onClick={() => navigate('/send')}
+              className="flex-1 flex flex-col items-center gap-3 p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all border border-indigo-100 dark:border-slate-700 group"
+            >
+              <span className="text-5xl group-hover:scale-110 transition-transform">📤</span>
+              <span className="text-xl font-bold text-slate-900 dark:text-slate-100">Send File</span>
+              <span className="text-sm text-slate-500 dark:text-slate-400">
+                Upload &amp; get a shareable QR
+              </span>
+            </button>
+
+            <button
+              onClick={() => navigate('/receive')}
+              className="flex-1 flex flex-col items-center gap-3 p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all border border-violet-100 dark:border-slate-700 group"
+            >
+              <span className="text-5xl group-hover:scale-110 transition-transform">📥</span>
+              <span className="text-xl font-bold text-slate-900 dark:text-slate-100">Receive File</span>
+              <span className="text-sm text-slate-500 dark:text-slate-400">
+                Open link from QR code
+              </span>
+            </button>
+          </div>
         </div>
-        <p className="mt-8 text-sm text-gray-400">
-          Powered by WebRTC · Files never touch our servers
-        </p>
       </div>
     </div>
   );

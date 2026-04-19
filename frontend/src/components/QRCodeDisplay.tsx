@@ -7,9 +7,9 @@ interface Props {
 
 export default function QRCodeDisplay({ value, size = 220 }: Props) {
   return (
-    <div className="flex flex-col items-center p-4 bg-white rounded-xl shadow">
+    <div className="flex flex-col items-center p-4 bg-white dark:bg-slate-100 rounded-xl shadow">
       <QRCodeSVG value={value} size={size} />
-      <p className="mt-3 text-xs text-gray-400 break-all max-w-xs text-center">{value}</p>
+      <p className="mt-3 text-xs text-slate-500 break-all max-w-xs text-center">{value}</p>
     </div>
   );
 }

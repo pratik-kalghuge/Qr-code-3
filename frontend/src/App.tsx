@@ -6,7 +6,7 @@ import HomePage from './pages/HomePage';
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <Routes>
         <Route path="/" element={<AutoRoute />} />
         <Route path="/send" element={<SenderPage />} />
